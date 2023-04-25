@@ -1,11 +1,13 @@
 import telebot
 import random
 import psycopg2
+import os
 bot = telebot.TeleBot('token')
 user_text = {}
 commands = [
     telebot.types.BotCommand('start', 'запустить бота'),
-    telebot.types.BotCommand('insert_data', 'добавить данные'), ]
+    telebot.types.BotCommand('insert_data', 'добавить данные'), 
+    telebot.types.BotCommand('open', 'открыть pgadmin 4') ]
 bot.set_my_commands(commands)
 
 @bot.message_handler(commands=['start'])
@@ -49,5 +51,9 @@ def get_img(message):
     conn.commit()
     conn.close()
     cursor.close()
-
+    
+@bot.message_handler(commands=['open'])
+def start_pg(message):
+    os.startfile('C:/Program Files/PostgreSQL/15/pgAdmin 4/bin/pgAdmin4.exe')
+    
 bot.infinity_polling()
