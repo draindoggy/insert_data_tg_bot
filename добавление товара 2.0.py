@@ -52,6 +52,32 @@ def get_img(message): #функция для сохранения фотогра
     conn.close()
     cursor.close()
     
+@bot.message_handler(commands=['delete'])
+def delete_tovar(message):
+    conn = psycopg2.connect(dbname='test', user='postgres', password='password', host='127.0.0.1')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM shop')
+    all_data = cursor.fetchall()
+    res_list = []
+    bot.send_message(message.chat.id, 'список всех товаров: ')
+    for s in all_data:
+        d1 = s[1]
+        res_list.append(d1)
+        bot.send_message(message.chat.id, d1)
+    conn.commit()
+    bot.send_message(message.chat.id, 'выберите товар из списка, который хотите удалить')
+    bot.register_next_step_handler(message, deleted_tovar)
+def deleted_tovar(message):
+    tovar['first'] = message.text
+    del_t = tovar.get('first')
+    conn = psycopg2.connect(dbname='test', user='postgres', password='password', host='127.0.0.1')
+    cursor = conn.cursor()
+    cursor.execute(f"DELETE FROM shop WHERE name = '{del_t}';")
+    bot.send_message(message.chat.id, 'выбранный товар удален!')
+    conn.commit()
+    conn.close()
+    cursor.close()
+    
 @bot.message_handler(commands=['open'])
 def start_pg(message):
     os.startfile('C:/Program Files/PostgreSQL/15/pgAdmin 4/bin/pgAdmin4.exe') #открываем субд pgadmin4
